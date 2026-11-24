@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Paint the Town Red · Kah Lok</title>
+  <meta name="description" content="Case study: a crowd system that makes a city feel busy while costing a fraction to run, with data-driven reports for designers.">
+  <meta property="og:title" content="Paint the Town Red: crowd & citizens system">
+  <meta property="og:description" content="Object pooling, on-screen-aware detail tiers, a population bubble and data-driven reports.">
+  <meta property="og:image" content="https://nkahlok.github.io/assets/img/cover.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23ff3b3b'/><text x='16' y='23' font-family='Arial Black,Arial' font-size='17' text-anchor='middle' fill='white'>KL</text></svg>">
+</head>
+<body>
+  <nav class="nav">
+    <div class="wrap">
+      <a class="logo" href="../">Kah Lok</a>
+      <ul>
+        <li class="hide-sm"><a href="#process">Process</a></li>
+        <li><a href="#results">Results</a></li>
+        <li><a href="../#work">All work</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="wrap">
+      <span class="eyebrow">Case study · System design</span>
+      <h1>Paint the Town Red</h1>
+      <p class="lead" style="margin-top:22px">A city crowd that feels busy without costing the earth. Instead of asking artists to cut back
+        their work, I designed systems that make the crowd cheap to run, and tools that show designers whether it is working.</p>
+      <dl class="meta">
+        <div><dt>My role</dt><dd>System design</dd></div>
+        <div><dt>Team</dt><dd>2 system designers</dd></div>
+        <div><dt>Engine</dt><dd>Unity 6 (URP), C#</dd></div>
+        <div><dt>Output</dt><dd>Windows build + reports</dd></div>
+      </dl>
+    </div>
+  </header>
+
+  <section>
+    <div class="wrap">
+      <div class="stats">
+        <div class="stat"><b>+11%</b><span>average frame rate, every optimisation on vs off</span></div>
+        <div class="stat"><b>0</b><span>NPCs seen popping into existence</span></div>
+        <div class="stat"><b>5</b><span>setups compared by the built-in benchmark</span></div>
+        <div class="stat"><b>1</b><span>visual report per play session, with fixes</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap two">
+      <div>
+        <span class="eyebrow">The brief</span>
+        <h2>Busy city, small budget</h2>
+      </div>
+      <div>
+        <p class="lead">Crowds are expensive: every NPC is a skinned model with randomised parts, an animator and an AI brain.
+          The usual fix is to compromise the art. My goal was the opposite: let designers and systems carry the load,
+          so the city feels alive and the artists' work survives.</p>
+        <figure class="figure">
+          <img src="../assets/img/npc-variants.png" alt="Three NPC variants with different randomised heads" loading="lazy">
+          <figcaption>NPCs are built from randomised parts, which multiplies the cost of every one on screen.</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section id="process">
+    <div class="wrap">
+      <span class="eyebrow">Process</span>
+      <h2>Four iterations</h2>
+      <p class="lead muted" style="margin-top:14px">Each round ended with a playtest. What the playtest exposed became the next round's goal.</p>
+
+      <article class="step">
+        <div class="num">Iteration 01</div>
+        <div>
+          <h3>Core optimisation systems</h3>
+          <p class="goal">Goal: make a city crowd cheap to run.</p>
+          <div class="cards">
+            <div class="card"><h4>Object pooling</h4><p>NPCs and their randomised parts are prepared before play and reused, so nothing is built at runtime.</p></div>
+            <div class="card"><h4>Detail tiers (LODs)</h4><p>NPCs drop to simpler models, cheaper shadows and slower thinking the further they are from the camera.</p></div>
+          </div>
+          <div class="playtest">
+            <h4>Playtest 1</h4>
+            <ol>
+              <li>NPCs were taken from the pool but never returned to it, so pooling saved little.</li>
+              <li>The map always held the maximum number of NPCs, even where the player would never see them.</li>
+              <li>Detail only depended on distance: an NPC right behind the player still rendered at full detail.</li>
+            </ol>
+            <p class="verdict">The systems existed, but weren't being used well.</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="step">
+        <div class="num">Iteration 02</div>
+        <div>
+          <h3>Enhancing the systems</h3>
+          <p class="goal">Goal: make the existing systems do more.</p>
+          <div class="two">
+            <figure class="figure">
+              <img src="../assets/img/population-bubble.png" alt="Overhead view of the population bubble around the player" loading="lazy">
+              <figcaption><b>Population bubble.</b> The crowd lives in a bubble around the player. NPCs that drift too far go back
+                to the pool and reappear near the player, out of sight.</figcaption>
+            </figure>
+            <figure class="figure">
+              <img src="../assets/img/hybrid-detail.png" alt="Overhead view showing NPCs in the view cone at distance-based detail and the rest at lowest detail" loading="lazy">
+              <figcaption><b>Hybrid detail.</b> Off-screen NPCs drop straight to the lowest tier (white rings). On-screen NPCs,
+                or ones about to come into view, use distance-based detail (blue).</figcaption>
+            </figure>
+          </div>
+          <div class="playtest">
+            <h4>Playtest 2</h4>
+            <ol>
+              <li>NPCs often spawned behind the player, so the street ahead felt empty.</li>
+              <li>NPCs were recycled too eagerly just for being off screen, even where the player was heading, and new ones arrived in clumps.</li>
+              <li>New NPCs stood still until they came on screen before choosing where to go.</li>
+            </ol>
+            <p class="verdict">A gap in the spawner's logic made new NPCs look unnaturally placed.</p>
+          </div>
+          <figure class="figure" style="margin-top:18px">
+            <img src="../assets/img/playtest-2.png" alt="Overhead view with red crosses marking NPCs recycled in the player's path" loading="lazy">
+            <figcaption>Red crosses: NPCs recycled in the direction the player was walking.</figcaption>
+          </figure>
+        </div>
+      </article>
+
+      <article class="step">
+        <div class="num">Iteration 03</div>
+        <div>
+          <h3>Polish</h3>
+          <p class="goal">Goal: a natural-feeling, busy city without tanking performance.</p>
+          <div class="cards">
+            <div class="card"><h4>Trickle spawning</h4><p>Gaps in the crowd fill gradually, at a random pace, instead of all at once.</p></div>
+            <div class="card"><h4>Social distancing</h4><p>New NPCs keep their distance from recent spawn spots, so they never arrive in clumps.</p></div>
+            <div class="card"><h4>Pre-emptive walking</h4><p>New NPCs pick a point of interest straight away, so they walk into view as if they came from somewhere.</p></div>
+            <div class="card"><h4>Gentler recycling</h4><p>NPCs stay longer and are recycled more slowly, unless they are very far away.</p></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="step">
+        <div class="num">Iteration 04</div>
+        <div>
+          <h3>Data-driven design</h3>
+          <p class="goal">Goal: show designers whether their crowd works, and which values to change.</p>
+          <p>Every play session produces a visual report. Instead of raw CSV logs, it answers the designer's questions
+            directly and suggests a fix for everything it flags.</p>
+          <div class="cards">
+            <div class="card"><h4>KPI cards</h4><p>The key numbers of the session at a glance, for quick decisions.</p></div>
+            <div class="card"><h4>Audit table</h4><p>What was flagged, the setting behind it, and how to fix it.</p></div>
+            <div class="card"><h4>Heatmaps</h4><p>Where NPCs spent their time and where they appeared, so patterns are easy to spot.</p></div>
+          </div>
+          <figure class="figure">
+            <img src="../assets/img/report-kpis.png" alt="Row of KPI cards from the crowd report" loading="lazy">
+          </figure>
+          <div class="two" style="margin-top:18px">
+            <figure class="figure">
+              <img src="../assets/img/report-audit.png" alt="Audit table listing flagged crowd settings with suggested fixes" loading="lazy">
+              <figcaption>The audit table names the exact setting to change and a value to try.</figcaption>
+            </figure>
+            <figure class="figure">
+              <img src="../assets/img/report-heatmap.png" alt="Heatmaps of where NPCs spent time and where they appeared" loading="lazy">
+              <figcaption>Heatmaps: where NPCs spent their time, and where they appeared.</figcaption>
+            </figure>
+          </div>
+          <div class="actions">
+            <a class="button" href="../reports/crowd-report.html" target="_blank" rel="noopener">Open a real report</a>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section id="results">
+    <div class="wrap">
+      <span class="eyebrow">Results</span>
+      <h2>What it's worth</h2>
+      <p class="lead muted" style="margin:14px 0 28px">The built-in benchmark walks the same route five times, switching optimisations off
+        one at a time. Measured in the Windows build.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Setup</th><th>Average FPS</th><th></th><th>Slowest 1% (FPS)</th></tr></thead>
+          <tbody>
+            <tr class="best"><td>Everything on</td><td class="num">504</td><td style="width:34%"><div class="bar" style="width:100%"></div></td><td class="num">284</td></tr>
+            <tr><td>No detail tiers</td><td class="num">478</td><td><div class="bar" style="width:94.8%"></div></td><td class="num">275</td></tr>
+            <tr><td>No lighter models</td><td class="num">490</td><td><div class="bar" style="width:97.2%"></div></td><td class="num">278</td></tr>
+            <tr><td>No object pool</td><td class="num">451</td><td><div class="bar" style="width:89.5%"></div></td><td class="num">258</td></tr>
+            <tr><td>Everything off</td><td class="num">452</td><td><div class="bar" style="width:89.7%"></div></td><td class="num">265</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="cards" style="margin-top:28px">
+        <div class="card"><h4>Better for everyone</h4><p>Players get a smoother game, artists compromise less, and designers make decisions backed by data.</p></div>
+        <div class="card"><h4>Room to grow</h4><p>Even in a light scene (low-poly models, simple animation, 40 NPCs) the frame rate rose by 11%. Bigger, heavier scenes stand to gain more.</p></div>
+        <div class="card"><h4>A lived-in city</h4><p>No one is seen spawning, the crowd fills in naturally, and nothing too complex was needed to get there.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap two">
+      <div>
+        <span class="eyebrow">Reflection</span>
+        <h2>Looking back</h2>
+      </div>
+      <blockquote>
+        <p>My proposal tried to solve the problem in one dimension: optimisation was the only goal. Through playtesting and
+          research, the solution grew to serve more people.</p>
+        <p>The reports help designers validate their systems and find outliers. Polishing the core systems improved not just
+          performance but how alive and believable the NPCs are. And by comparing ways to build randomised NPCs, artists have a
+          clearer direction, without worrying that their art will be sacrificed for performance.</p>
+      </blockquote>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <span class="eyebrow">What's next</span>
+      <h2>From crowd to citizens</h2>
+      <p class="lead muted" style="margin:14px 0 24px">The next iteration combines this crowd with my teammate's reputation and gossip system.
+        Every NPC becomes a person who keeps their name, look and memories when they leave and come back, carries on living
+        off screen, and follows a daily schedule: queuing for coffee, catching the bus, working a shop counter.</p>
+      <figure class="figure">
+        <img src="../assets/img/citizens-tags.jpg" alt="In-game view at 12:38 with name tags showing a vendor serving customers" loading="lazy">
+        <figcaption>Name tags show who each person is and what their day has them doing.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap">
+      <a href="../">← Back to all work</a>
+      <span><a href="https://github.com/nkahlok">GitHub</a></span>
+    </div>
+  </footer>
+</body>
+</html>
